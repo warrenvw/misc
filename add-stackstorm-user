@@ -1,0 +1,48 @@
+#!/bin/bash
+
+if [ $# -ne 4 ]; then
+  echo "Usage: $0 <user> <uid> <full name> <ssh-key>"
+  echo ""
+  echo "If executing using curl|bash, we recommend the following syntax:"
+  echo "  curl -fsS <url> | bash -s <user> <uid> <full name> <ssh-key>"
+  exit 1
+fi
+
+user=$1
+uid=$2
+fn=$3
+key=$4
+
+gid=$uid
+
+# Add user, but only if it doesn't already exist
+grep $user /etc/passwd
+if [ $? -ne 0 ]; then
+  sudo addgroup --gid $uid $user
+  sudo adduser --uid $uid --gid $gid --shell /bin/bash --disabled-password --gecos "$fn" $user
+
+  sudo mkdir -p /home/$user/.ssh
+  sudo chmod 700 /home/$user/.ssh
+fi
+
+# Update authorized_keys
+keys=/home/$user/.ssh/authorized_keys
+sudo touch $keys
+sudo grep $key $keys
+if [ $? -ne 0 ]; then
+  sudo /bin/bash -c "echo $key >> $keys"
+fi
+sudo chmod 600 $keys
+sudo chown -R $user:$user /home/$user/.ssh
+
+# Add entry to /etc/sudoers.d/admins
+sudoersd='/etc/sudoers.d'
+if [ ! -d $sudoersd ]; then
+  sudo mkdir -p $sudoersd
+fi
+
+admins="$sudoersd/admins"
+sudo grep $user $admins
+if [ $? -ne 0 ]; then
+  sudo bash -c "echo '$user       ALL=(ALL)      NOPASSWD: ALL' >> $admins"
+fi
