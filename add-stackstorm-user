@@ -31,10 +31,10 @@ gid=$uid
 if ! grep -q $user /etc/passwd; then
   sudo addgroup --gid $uid $user
   sudo adduser --uid $uid --gid $gid --shell /bin/bash --disabled-password --gecos ',,,' $user
-
-  sudo mkdir -p /home/$user/.ssh
-  sudo chmod 700 /home/$user/.ssh
 fi
+
+sudo mkdir -p /home/$user/.ssh
+sudo chmod 700 /home/$user/.ssh
 
 # Update authorized_keys
 keys=/home/$user/.ssh/authorized_keys
