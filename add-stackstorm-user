@@ -8,7 +8,7 @@ fail() {
 
 trap 'fail' EXIT
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 3 ]; then
   echo "Usage: $0 <user> <uid> <ssh-key>"
   echo ""
   echo "If executing using curl|bash, we recommend the following syntax:"
