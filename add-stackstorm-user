@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Add user with specified uid and ssh-key.
+# Add normal $user with specified $uid and (ssh) $key.
 #
-# NOTE: The script will return a non-zero status on failure.
+# NOTE: This script will return a non-zero status on failure.
 
 set -e
 
