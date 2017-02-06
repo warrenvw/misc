@@ -1,10 +1,18 @@
 #!/bin/bash
 
+set -e
+
+fail() {
+  exit 2
+}
+
+trap 'fail' EXIT
+
 if [ $# -ne 4 ]; then
-  echo "Usage: $0 <user> <uid> <full name> <ssh-key>"
+  echo "Usage: $0 <user> <uid> <ssh-key>"
   echo ""
   echo "If executing using curl|bash, we recommend the following syntax:"
-  echo "  curl -fsS <url> | bash -s <user> <uid> <full name> <ssh-key>"
+  echo "  curl -fsS <url> | bash -s <user> <uid> <ssh-key>"
   exit 1
 fi
 
@@ -28,7 +36,7 @@ fi
 # Update authorized_keys
 keys=/home/$user/.ssh/authorized_keys
 sudo touch $keys
-sudo grep $key $keys
+sudo grep "$key" $keys
 if [ $? -ne 0 ]; then
   sudo /bin/bash -c "echo $key >> $keys"
 fi
@@ -46,3 +54,7 @@ sudo grep $user $admins
 if [ $? -ne 0 ]; then
   sudo bash -c "echo '$user       ALL=(ALL)      NOPASSWD: ALL' >> $admins"
 fi
+
+trap - EXIT
+
+exit 0
